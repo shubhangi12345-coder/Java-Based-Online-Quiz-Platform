@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Error')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-5 text-center">
+    <!-- errorCode/errorTitle come from GlobalExceptionHandler; status/error come from Spring Boot's own error page -->
+    <h1 class="display-3 text-brand" th:text="${errorCode != null} ? ${errorCode} : (${status != null} ? ${status} : '!')">404</h1>
+    <h2 class="h4" th:text="${errorTitle != null} ? ${errorTitle} : 'Something went wrong'">Page not found</h2>
+    <p class="text-muted" th:text="${errorMessage != null} ? ${errorMessage} : 'The page could not be shown. Please try again.'">Message</p>
+    <a class="btn btn-brand" th:href="@{/}">Go to my dashboard</a>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Log in')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container">
+    <div class="card auth-card p-4">
+        <h1 class="h3 mb-3">Log in</h1>
+        <div class="alert alert-danger" role="alert" th:if="${param.error}">Invalid email or password, or the account is disabled.</div>
+        <div class="alert alert-success" role="status" th:if="${param.logout}">You have been logged out.</div>
+        <div class="alert alert-success" role="status" th:if="${param.registered}">Registration successful. Please log in.</div>
+
+        <!-- th:action adds the hidden CSRF token -->
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Email</label>
+                <input id="username" name="username" type="email" class="form-control" required autofocus autocomplete="username">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input id="password" name="password" type="password" class="form-control" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-brand w-100">Log in</button>
+        </form>
+        <p class="text-center text-muted mt-3 mb-0">New here? <a th:href="@{/register}">Create an account</a></p>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

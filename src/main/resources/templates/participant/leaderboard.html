@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Leaderboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <h1 class="h3 mb-3">Leaderboard</h1>
+    <div class="card p-3">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead><tr><th>Rank</th><th>Participant</th><th>Attempts</th><th>Average score</th><th>Best score</th></tr></thead>
+                <tbody>
+                <tr th:each="r : ${rows}" th:classappend="${r.userId == currentUser.id} ? 'table-primary'">
+                    <td class="fw-bold" th:text="${r.rank}">1</td>
+                    <td><span th:text="${r.name}">Name</span> <span class="badge bg-info text-dark" th:if="${r.userId == currentUser.id}">You</span></td>
+                    <td th:text="${r.attempts}">1</td>
+                    <td th:text="${#numbers.formatDecimal(r.average, 1, 1)} + '%'">0%</td>
+                    <td th:text="${#numbers.formatDecimal(r.best, 1, 1)} + '%'">0%</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(rows)}"><td colspan="5" class="text-muted">Nobody has finished a quiz yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p class="small text-muted mt-2">Ranked by average score, then best score, then number of attempts. Only finished attempts count.</p>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

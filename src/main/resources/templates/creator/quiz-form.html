@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quiz form')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4" style="max-width: 760px">
+    <a th:href="@{${cancelUrl}}">&larr; Back</a>
+    <form class="card p-4 mt-2" th:action="@{${formAction}}" th:object="${quizForm}" method="post" novalidate>
+        <h1 class="h4 mb-3" th:text="${formTitle}">Quiz</h1>
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+            <div th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'" maxlength="200">
+            <div class="invalid-feedback" th:errors="*{title}">Error</div>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" rows="3" th:field="*{description}" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'" maxlength="1000"></textarea>
+            <div class="invalid-feedback" th:errors="*{description}">Error</div>
+        </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Category (topic)</label>
+            <input type="text" class="form-control" th:field="*{category}" th:classappend="${#fields.hasErrors('category')} ? 'is-invalid'" maxlength="100">
+            <div class="invalid-feedback" th:errors="*{category}">Error</div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="difficulty" class="form-label">Difficulty</label>
+                <select class="form-select" th:field="*{difficulty}">
+                    <option th:each="d : ${difficulties}" th:value="${d}" th:text="${d}">MEDIUM</option>
+                </select>
+                <div class="text-danger small" th:if="${#fields.hasErrors('difficulty')}" th:errors="*{difficulty}">Error</div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="durationMinutes" class="form-label">Duration (minutes)</label>
+                <input type="number" min="1" max="180" class="form-control" th:field="*{durationMinutes}" th:classappend="${#fields.hasErrors('durationMinutes')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{durationMinutes}">Error</div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="passingPercent" class="form-label">Passing percentage</label>
+                <input type="number" min="1" max="100" class="form-control" th:field="*{passingPercent}" th:classappend="${#fields.hasErrors('passingPercent')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{passingPercent}">Error</div>
+            </div>
+        </div>
+        <p class="text-muted small">After saving you add questions, then submit the quiz for admin approval.</p>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-brand">Save</button>
+            <a class="btn btn-outline-secondary" th:href="@{${cancelUrl}}">Cancel</a>
+        </div>
+    </form>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

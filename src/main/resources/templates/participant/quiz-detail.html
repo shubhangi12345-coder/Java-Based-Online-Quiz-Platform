@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quiz details')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <a th:href="@{/participant/quizzes}">&larr; Back to quizzes</a>
+
+    <div class="card p-4 my-3">
+        <div class="d-flex justify-content-between flex-wrap gap-2">
+            <h1 class="h3 mb-0" th:text="${quiz.title}">Quiz</h1>
+            <span th:replace="~{fragments/layout :: difficultyBadge(${quiz.difficulty})}"></span>
+        </div>
+        <p class="text-muted mt-2" th:text="${quiz.description}">Description</p>
+        <dl class="row mb-3">
+            <dt class="col-sm-3">Category</dt><dd class="col-sm-9" th:text="${quiz.category}">Category</dd>
+            <dt class="col-sm-3">Duration</dt><dd class="col-sm-9" th:text="${quiz.durationMinutes} + ' minutes'">10</dd>
+            <dt class="col-sm-3">Questions</dt><dd class="col-sm-9" th:text="${#lists.size(quiz.questions)}">5</dd>
+            <dt class="col-sm-3">Total marks</dt><dd class="col-sm-9" th:text="${quiz.totalMarks}">5</dd>
+            <dt class="col-sm-3">Passing mark</dt><dd class="col-sm-9" th:text="${quiz.passingPercent} + '%'">40%</dd>
+            <dt class="col-sm-3">Created by</dt><dd class="col-sm-9" th:text="${quiz.creator.fullName}">Creator</dd>
+        </dl>
+        <ul class="small text-muted">
+            <li>The timer starts when you press Start and cannot be paused.</li>
+            <li>When time runs out the quiz is submitted automatically.</li>
+            <li>If you leave and come back, you resume, but the clock keeps running.</li>
+            <li>Correct answers are shown after you submit.</li>
+        </ul>
+        <div>
+            <a class="btn btn-warning" th:if="${runningAttempt != null}" th:href="@{/participant/attempts/{id}/take(id=${runningAttempt.id})}">Resume quiz</a>
+            <form th:if="${runningAttempt == null}" th:action="@{/participant/quizzes/{id}/start(id=${quiz.id})}" method="post"
+                  onsubmit="return confirm('Start now? The timer begins immediately.')">
+                <button type="submit" class="btn btn-success btn-lg">Start quiz</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card p-3">
+        <h2 class="h5">Your previous attempts</h2>
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead><tr><th>Date</th><th>Score</th><th>Result</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="a : ${pastAttempts}">
+                    <td th:text="${#temporals.format(a.startedAt, 'dd MMM yyyy HH:mm')}">date</td>
+                    <td th:text="${a.score} + ' / ' + ${a.totalMarks} + ' (' + ${#numbers.formatDecimal(a.percentage, 1, 1)} + '%)'">0</td>
+                    <td><span class="badge" th:classappend="${a.passed} ? 'bg-success' : 'bg-danger'" th:text="${a.passed} ? 'Passed' : 'Failed'">Passed</span></td>
+                    <td><a class="btn btn-sm btn-outline-primary" th:href="@{/participant/attempts/{id}/result(id=${a.id})}">Review</a></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(pastAttempts)}"><td colspan="4" class="text-muted">You have not finished this quiz yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

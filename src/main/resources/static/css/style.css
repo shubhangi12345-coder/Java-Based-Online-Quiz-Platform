@@ -1,0 +1,39 @@
+/* Small custom styles on top of Bootstrap 5 */
+:root { --brand: #4338ca; --brand-dark: #3730a3; }
+body { background: #f4f6fb; }
+.bg-brand { background: var(--brand); }
+.btn-brand { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn-brand:hover { background: var(--brand-dark); border-color: var(--brand-dark); color: #fff; }
+.text-brand { color: var(--brand); }
+.card { border: 0; box-shadow: 0 2px 10px rgba(15, 23, 42, .07); border-radius: 14px; }
+.stat-card .stat-value { font-size: 1.9rem; font-weight: 700; line-height: 1.1; }
+.hero { background: linear-gradient(135deg, #4338ca, #7c3aed); color: #fff; border-radius: 18px; }
+.auth-card { max-width: 440px; margin: 3rem auto; }
+
+/* quiz taking page */
+.take-bar { position: sticky; top: 0; z-index: 20; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .08); }
+.timer { font-variant-numeric: tabular-nums; font-size: 1.5rem; font-weight: 700; padding: .2rem .8rem;
+         border-radius: 10px; background: #e0e7ff; color: #3730a3; }
+.timer.warn { background: #fef3c7; color: #92400e; }
+.timer.danger { background: #fee2e2; color: #991b1b; }
+.choice { display: block; cursor: pointer; margin-bottom: .6rem; }
+.choice input { position: absolute; opacity: 0; }
+.choice .choice-body { display: flex; gap: .8rem; align-items: center; padding: .7rem 1rem;
+                       border: 2px solid #e2e8f0; border-radius: 12px; background: #fff; }
+.choice:hover .choice-body { border-color: #a5b4fc; }
+.choice input:checked + .choice-body { border-color: var(--brand); background: #e0e7ff; }
+.choice input:focus-visible + .choice-body { box-shadow: 0 0 0 3px rgba(67, 56, 202, .35); }
+.choice-letter { width: 32px; height: 32px; border-radius: 50%; background: #e2e8f0; display: inline-flex;
+                 align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+.choice input:checked + .choice-body .choice-letter { background: var(--brand); color: #fff; }
+
+/* result review */
+.opt { padding: .45rem .8rem; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: .4rem; }
+.opt.correct { background: #dcfce7; border-color: #86efac; font-weight: 600; }
+.opt.wrong { background: #fee2e2; border-color: #fca5a5; font-weight: 600; }
+.score-ring { width: 150px; height: 150px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+              background: conic-gradient(var(--ring, #4338ca) calc(var(--pct) * 1%), #e2e8f0 0); }
+.score-ring > div { width: 120px; height: 120px; border-radius: 50%; background: #fff; display: flex;
+                    flex-direction: column; align-items: center; justify-content: center; }
+.score-ring.pass { --ring: #16a34a; }
+.score-ring.fail { --ring: #dc2626; }

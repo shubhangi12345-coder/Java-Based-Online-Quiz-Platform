@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Browse quizzes')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <h1 class="h3 mb-3">Available quizzes</h1>
+    <form class="row g-2 mb-4" method="get" th:action="@{/participant/quizzes}">
+        <div class="col-md-6">
+            <label for="keyword" class="visually-hidden">Search</label>
+            <input id="keyword" type="search" name="keyword" class="form-control" placeholder="Search by title, topic or description" th:value="${keyword}">
+        </div>
+        <div class="col-md-3">
+            <label for="difficulty" class="visually-hidden">Difficulty</label>
+            <select id="difficulty" name="difficulty" class="form-select">
+                <option value="">All difficulties</option>
+                <option th:each="d : ${difficulties}" th:value="${d}" th:text="${d}" th:selected="${d == selectedDifficulty}">EASY</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-brand flex-grow-1">Search</button>
+            <a class="btn btn-outline-secondary" th:href="@{/participant/quizzes}">Reset</a>
+        </div>
+    </form>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4" th:each="q : ${quizzes}">
+            <div class="card h-100 p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-light text-dark" th:text="${q.category}">Category</span>
+                    <span>
+                        <span class="badge bg-info text-dark" th:if="${q.difficulty == recommended}">Recommended</span>
+                        <span th:replace="~{fragments/layout :: difficultyBadge(${q.difficulty})}"></span>
+                    </span>
+                </div>
+                <h2 class="h5" th:text="${q.title}">Title</h2>
+                <p class="text-muted small flex-grow-1" th:text="${q.description}">Description</p>
+                <div class="small text-muted mb-2"><span th:text="${q.durationMinutes}">10</span> min &middot;
+                    <span th:text="${#lists.size(q.questions)}">5</span> questions &middot; by <span th:text="${q.creator.fullName}">Creator</span></div>
+                <a class="btn btn-brand" th:href="@{/participant/quizzes/{id}(id=${q.id})}">View quiz</a>
+            </div>
+        </div>
+    </div>
+    <div class="card p-4 text-center text-muted" th:if="${#lists.isEmpty(quizzes)}">No quizzes match your search.</div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

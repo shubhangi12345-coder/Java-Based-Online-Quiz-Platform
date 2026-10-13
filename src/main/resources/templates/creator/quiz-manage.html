@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage quiz')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <a th:href="@{/creator/quizzes}">&larr; Back to my quizzes</a>
+
+    <div class="card p-4 my-3">
+        <div class="d-flex justify-content-between flex-wrap gap-2">
+            <h1 class="h3 mb-0" th:text="${quiz.title}">Quiz</h1>
+            <span th:replace="~{fragments/layout :: statusBadge(${quiz.status})}"></span>
+        </div>
+        <p class="text-muted mt-2" th:text="${quiz.description}">Description</p>
+        <dl class="row mb-3">
+            <dt class="col-sm-3">Category</dt><dd class="col-sm-9" th:text="${quiz.category}">Category</dd>
+            <dt class="col-sm-3">Difficulty</dt><dd class="col-sm-9"><span th:replace="~{fragments/layout :: difficultyBadge(${quiz.difficulty})}"></span></dd>
+            <dt class="col-sm-3">Duration</dt><dd class="col-sm-9" th:text="${quiz.durationMinutes} + ' minutes'">10</dd>
+            <dt class="col-sm-3">Passing mark</dt><dd class="col-sm-9" th:text="${quiz.passingPercent} + '%'">40%</dd>
+            <dt class="col-sm-3">Questions</dt><dd class="col-sm-9" th:text="${#lists.size(quiz.questions)} + ' (total marks: ' + ${quiz.totalMarks} + ')'">3</dd>
+        </dl>
+
+        <div class="alert alert-danger" th:if="${quiz.status.name() == 'REJECTED'}">
+            <strong>Rejected by the admin:</strong> <span th:text="${quiz.rejectionReason}">reason</span><br>
+            Fix the problems, then submit the quiz again.
+        </div>
+        <div class="alert alert-info" th:if="${quiz.status.name() == 'DRAFT'}">
+            Draft. Add at least <strong th:text="${minQuestions}">3</strong> questions, then submit it for approval.
+        </div>
+        <div class="alert alert-warning" th:if="${quiz.status.name() == 'PENDING_APPROVAL'}">
+            Waiting for the admin. The quiz is locked until a decision is made.
+        </div>
+        <div class="alert alert-success" th:if="${quiz.status.name() == 'APPROVED'}">
+            Approved. Participants can now see and take this quiz.
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-primary" th:if="${quiz.editable}" th:href="@{/creator/quizzes/{id}/edit(id=${quiz.id})}">Edit details</a>
+            <a class="btn btn-outline-primary" th:if="${quiz.editable}" th:href="@{/creator/quizzes/{id}/questions/new(id=${quiz.id})}">+ Add question</a>
+            <form th:if="${quiz.editable}" th:action="@{/creator/quizzes/{id}/submit(id=${quiz.id})}" method="post"
+                  onsubmit="return confirm('Submit this quiz for admin approval? You cannot edit it while it is under review.')">
+                <button type="submit" class="btn btn-brand" th:disabled="${#lists.size(quiz.questions) lt minQuestions}">Submit for approval</button>
+            </form>
+            <a class="btn btn-outline-secondary" th:if="${quiz.status.name() == 'APPROVED'}" th:href="@{/creator/quizzes/{id}/results(id=${quiz.id})}">View results</a>
+            <form th:if="${quiz.status.name() != 'PENDING_APPROVAL'}" th:action="@{/creator/quizzes/{id}/delete(id=${quiz.id})}" method="post"
+                  onsubmit="return confirm('Delete this quiz and all its questions? This cannot be undone.')">
+                <button type="submit" class="btn btn-outline-danger">Delete quiz</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card p-4">
+        <h2 class="h5">Questions</h2>
+        <div th:each="q, st : ${quiz.questions}" class="border rounded p-3 mb-3 bg-white">
+            <div class="d-flex justify-content-between gap-2">
+                <div class="fw-semibold" th:text="${st.count} + '. ' + ${q.text}">Question</div>
+                <div><span th:replace="~{fragments/layout :: difficultyBadge(${q.difficulty})}"></span>
+                    <span class="badge bg-light text-dark" th:text="${q.marks} + ' mark(s)'">1</span></div>
+            </div>
+            <div class="mt-2">
+                <div class="opt" th:each="o : ${q.options}" th:classappend="${o.correct} ? 'correct'">
+                    <span th:text="${o.text}">Option</span> <span th:if="${o.correct}">&#10003;</span>
+                </div>
+            </div>
+            <p class="small text-muted mt-2 mb-0" th:if="${q.explanation != null}" th:text="'Explanation: ' + ${q.explanation}">Explanation</p>
+            <div class="d-flex gap-2 mt-2" th:if="${quiz.editable}">
+                <a class="btn btn-sm btn-outline-primary" th:href="@{/creator/quizzes/{id}/questions/{qid}/edit(id=${quiz.id},qid=${q.id})}">Edit</a>
+                <form th:action="@{/creator/quizzes/{id}/questions/{qid}/delete(id=${quiz.id},qid=${q.id})}" method="post"
+                      onsubmit="return confirm('Delete this question?')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+        <p class="text-muted" th:if="${#lists.isEmpty(quiz.questions)}">No questions yet.</p>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

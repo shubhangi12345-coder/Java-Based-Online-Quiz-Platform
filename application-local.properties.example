@@ -1,0 +1,17 @@
+# STEP: copy this file to  application-local.properties  (same folder as pom.xml)
+#       then replace every CHANGE_ME value. The copy is ignored by Git, so it is never uploaded.
+
+# --- MySQL connection ---
+spring.datasource.username=root
+spring.datasource.password=CHANGE_ME
+
+# --- First admin account (created automatically the first time the app starts) ---
+# Password rules: at least 8 characters, with a letter and a number.
+app.admin.name=Administrator
+app.admin.email=admin@example.com
+app.admin.password=CHANGE_ME
+
+# --- Optional demo data: sample creator, participants and one quiz ---
+# Set enabled=true and choose a demo password to try the app quickly.
+app.demo.enabled=false
+app.demo.password=CHANGE_ME

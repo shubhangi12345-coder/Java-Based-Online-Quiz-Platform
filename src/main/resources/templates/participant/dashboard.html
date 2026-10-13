@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Participant dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <h1 class="h3 mb-3">Welcome, <span th:text="${currentUser.fullName}">Student</span></h1>
+
+    <div class="alert alert-warning d-flex justify-content-between align-items-center" th:if="${runningAttempt != null}">
+        <span>You have an unfinished quiz: <strong th:text="${runningAttempt.quiz.title}">Quiz</strong></span>
+        <a class="btn btn-sm btn-warning" th:href="@{/participant/attempts/{id}/take(id=${runningAttempt.id})}">Resume</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.attempts}">0</div><div class="text-muted">Finished attempts</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${#numbers.formatDecimal(stats.averageScore, 1, 1)} + '%'">0%</div><div class="text-muted">Average score</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${#numbers.formatDecimal(stats.bestScore, 1, 1)} + '%'">0%</div><div class="text-muted">Best score</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.rank != null} ? '#' + ${stats.rank} : '-'">-</div><div class="text-muted">Leaderboard rank</div></div></div>
+    </div>
+
+    <div class="card p-3 mb-4">
+        <h2 class="h5">Suggested difficulty (rule-based)</h2>
+        <p class="mb-2"><span th:replace="~{fragments/layout :: difficultyBadge(${stats.recommendedDifficulty})}"></span>
+            <span th:text="${stats.recommendationReason}">Reason</span></p>
+        <a class="btn btn-sm btn-brand align-self-start" style="width: fit-content" th:href="@{/participant/quizzes(difficulty=${stats.recommendedDifficulty})}">Show quizzes at this level</a>
+        <p class="small text-muted mt-2 mb-0">This is a simple if/else rule on your last 3 scores. It is not machine learning.</p>
+    </div>
+
+    <div class="card p-3">
+        <h2 class="h5">Recent attempts</h2>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead><tr><th>Quiz</th><th>Score</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="a : ${recentAttempts}">
+                    <td th:text="${a.quiz.title}">Quiz</td>
+                    <td th:text="${a.finished} ? ${#numbers.formatDecimal(a.percentage, 1, 1)} + '%' : '-'">0%</td>
+                    <td><span class="badge" th:classappend="${a.finished} ? (${a.passed} ? 'bg-success' : 'bg-danger') : 'bg-warning text-dark'"
+                              th:text="${a.finished} ? (${a.passed} ? 'Passed' : 'Failed') : 'In progress'">Passed</span></td>
+                    <td><a class="btn btn-sm btn-outline-primary" th:if="${a.finished}" th:href="@{/participant/attempts/{id}/result(id=${a.id})}">Result</a>
+                        <a class="btn btn-sm btn-warning" th:unless="${a.finished}" th:href="@{/participant/attempts/{id}/take(id=${a.id})}">Resume</a></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(recentAttempts)}"><td colspan="4" class="text-muted">No attempts yet. <a th:href="@{/participant/quizzes}">Take your first quiz</a>.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

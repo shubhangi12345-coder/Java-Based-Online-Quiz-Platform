@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Creator dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Creator dashboard</h1>
+        <a class="btn btn-brand" th:href="@{/creator/quizzes/new}">+ New quiz</a>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.totalQuizzes}">0</div><div class="text-muted">Total quizzes</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.drafts}">0</div><div class="text-muted">Drafts</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.pending}">0</div><div class="text-muted">Pending approval</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.approved}">0</div><div class="text-muted">Approved</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.rejected}">0</div><div class="text-muted">Rejected</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.totalAttempts}">0</div><div class="text-muted">Finished attempts</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${#numbers.formatDecimal(stats.averageScore, 1, 1)} + '%'">0%</div><div class="text-muted">Average score</div></div></div>
+    </div>
+    <div class="card p-3">
+        <h2 class="h5">Recent quizzes</h2>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead><tr><th>Title</th><th>Status</th><th>Questions</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="q : ${recentQuizzes}">
+                    <td th:text="${q.title}">Title</td>
+                    <td><span th:replace="~{fragments/layout :: statusBadge(${q.status})}"></span></td>
+                    <td th:text="${#lists.size(q.questions)}">0</td>
+                    <td><a class="btn btn-sm btn-outline-primary" th:href="@{/creator/quizzes/{id}(id=${q.id})}">Manage</a></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(recentQuizzes)}"><td colspan="4" class="text-muted">You have not created a quiz yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

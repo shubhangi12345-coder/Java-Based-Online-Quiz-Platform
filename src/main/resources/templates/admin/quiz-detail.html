@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quiz review')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <a th:href="@{/admin/quizzes}">&larr; Back to quizzes</a>
+
+    <div class="card p-4 my-3">
+        <div class="d-flex justify-content-between flex-wrap gap-2">
+            <h1 class="h3 mb-0" th:text="${quiz.title}">Quiz</h1>
+            <span th:replace="~{fragments/layout :: statusBadge(${quiz.status})}"></span>
+        </div>
+        <p class="text-muted mt-2" th:text="${quiz.description}">Description</p>
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Creator</dt><dd class="col-sm-9" th:text="${quiz.creator.fullName} + ' (' + ${quiz.creator.email} + ')'">Creator</dd>
+            <dt class="col-sm-3">Category</dt><dd class="col-sm-9" th:text="${quiz.category}">Category</dd>
+            <dt class="col-sm-3">Difficulty</dt><dd class="col-sm-9"><span th:replace="~{fragments/layout :: difficultyBadge(${quiz.difficulty})}"></span></dd>
+            <dt class="col-sm-3">Duration</dt><dd class="col-sm-9" th:text="${quiz.durationMinutes} + ' minutes'">10</dd>
+            <dt class="col-sm-3">Passing mark</dt><dd class="col-sm-9" th:text="${quiz.passingPercent} + '%'">40%</dd>
+            <dt class="col-sm-3">Questions</dt><dd class="col-sm-9" th:text="${#lists.size(quiz.questions)} + ' (total marks: ' + ${quiz.totalMarks} + ')'">3</dd>
+        </dl>
+        <div class="alert alert-danger mt-3 mb-0" th:if="${quiz.status.name() == 'REJECTED'}">
+            <strong>Rejected:</strong> <span th:text="${quiz.rejectionReason}">reason</span>
+        </div>
+    </div>
+
+    <div class="card p-4 mb-3" th:if="${quiz.status.name() == 'PENDING_APPROVAL'}">
+        <h2 class="h5">Review decision</h2>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <form th:action="@{/admin/quizzes/{id}/approve(id=${quiz.id})}" method="post"
+                      onsubmit="return confirm('Approve this quiz? It becomes visible to participants.')">
+                    <button type="submit" class="btn btn-success w-100">Approve quiz</button>
+                </form>
+            </div>
+            <div class="col-md-8">
+                <form th:action="@{/admin/quizzes/{id}/reject(id=${quiz.id})}" method="post"
+                      onsubmit="return confirm('Reject this quiz? The creator will see your reason.')">
+                    <label for="reason" class="form-label">Reason for rejection</label>
+                    <textarea id="reason" name="reason" class="form-control mb-2" rows="2" maxlength="500" required></textarea>
+                    <button type="submit" class="btn btn-danger">Reject quiz</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-4">
+        <h2 class="h5">Questions</h2>
+        <div th:each="q, st : ${quiz.questions}" class="mb-3">
+            <div class="fw-semibold"><span th:text="${st.count} + '. ' + ${q.text}">Question</span>
+                <span class="badge bg-light text-dark" th:text="${q.marks} + ' mark(s)'">1 mark</span></div>
+            <div class="opt" th:each="o : ${q.options}" th:classappend="${o.correct} ? 'correct'">
+                <span th:text="${o.text}">Option</span> <span th:if="${o.correct}">&#10003; correct</span>
+            </div>
+        </div>
+        <p class="text-muted" th:if="${#lists.isEmpty(quiz.questions)}">This quiz has no questions.</p>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

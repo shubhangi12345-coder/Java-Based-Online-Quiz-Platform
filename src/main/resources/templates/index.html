@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Welcome')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <section class="hero p-5 mb-4">
+        <h1 class="display-5 fw-bold">Java Online Quiz Platform</h1>
+        <p class="lead mb-4">Take timed Java quizzes, see your score instantly, and track your progress.
+            Creators build quizzes, admins approve them, participants learn.</p>
+        <a class="btn btn-light btn-lg me-2" th:href="@{/register}">Create an account</a>
+        <a class="btn btn-outline-light btn-lg" th:href="@{/login}">Log in</a>
+    </section>
+    <div class="row g-3">
+        <div class="col-md-4"><div class="card h-100 p-3">
+            <h2 class="h5">Participant</h2>
+            <p class="text-muted mb-0">Browse approved quizzes, take them against the clock, review correct answers and climb the leaderboard.</p></div></div>
+        <div class="col-md-4"><div class="card h-100 p-3">
+            <h2 class="h5">Quiz Creator</h2>
+            <p class="text-muted mb-0">Write questions, submit quizzes for approval and see how participants perform.</p></div></div>
+        <div class="col-md-4"><div class="card h-100 p-3">
+            <h2 class="h5">Admin</h2>
+            <p class="text-muted mb-0">Manage users, approve or reject quizzes and watch platform statistics.</p></div></div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

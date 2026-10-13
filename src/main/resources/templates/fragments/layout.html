@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!-- Shared pieces used by every page through th:replace -->
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' | Quiz Platform'">Quiz Platform</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-brand">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">Quiz Platform</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto">
+                <th:block sec:authorize="hasRole('ADMIN')">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/users}">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/quizzes}">Quizzes</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/settings}">Settings</a></li>
+                </th:block>
+                <th:block sec:authorize="hasRole('CREATOR')">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/creator/dashboard}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/creator/quizzes}">My quizzes</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/creator/quizzes/new}">New quiz</a></li>
+                </th:block>
+                <th:block sec:authorize="hasRole('PARTICIPANT')">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/participant/dashboard}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/participant/quizzes}">Browse quizzes</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/participant/attempts}">My attempts</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/participant/leaderboard}">Leaderboard</a></li>
+                </th:block>
+            </ul>
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2" sec:authorize="isAuthenticated()">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/notifications}">Notifications
+                        <span class="badge bg-danger" th:if="${unreadCount != null and unreadCount > 0}" th:text="${unreadCount}">1</span></a>
+                </li>
+                <li class="nav-item"><span class="navbar-text" th:text="${currentUser != null} ? ${currentUser.fullName} : ''">Name</span></li>
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-light">Log out</button>
+                    </form>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto" sec:authorize="!isAuthenticated()">
+                <li class="nav-item"><a class="nav-link" th:href="@{/login}">Log in</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/register}">Register</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- success / error / warning messages sent with RedirectAttributes -->
+<div th:fragment="alerts">
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+        <span th:text="${success}">Done</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
+        <span th:text="${error}">Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" th:if="${warning}">
+        <span th:text="${warning}">Warning</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
+<span th:fragment="statusBadge(status)" class="badge"
+      th:classappend="${status.name() == 'APPROVED'} ? 'bg-success' : (${status.name() == 'PENDING_APPROVAL'} ? 'bg-warning text-dark' : (${status.name() == 'REJECTED'} ? 'bg-danger' : 'bg-secondary'))"
+      th:text="${status.label}">Status</span>
+
+<span th:fragment="difficultyBadge(level)" class="badge"
+      th:classappend="${level.name() == 'EASY'} ? 'bg-success' : (${level.name() == 'MEDIUM'} ? 'bg-warning text-dark' : 'bg-danger')"
+      th:text="${level}">MEDIUM</span>
+
+<th:block th:fragment="scripts">
+    <script th:src="@{/vendor/bootstrap/bootstrap.bundle.min.js}"></script>
+</th:block>
+
+</body>
+</html>

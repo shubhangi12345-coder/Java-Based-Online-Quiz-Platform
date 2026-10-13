@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Access denied')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-5 text-center">
+    <h1 class="display-3 text-brand">403</h1>
+    <h2 class="h4">Access denied</h2>
+    <p class="text-muted">Your account does not have permission to open this page.</p>
+    <a class="btn btn-brand" th:href="@{/}">Go to my dashboard</a>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

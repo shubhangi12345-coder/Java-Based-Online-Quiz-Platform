@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quiz results')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <a th:href="@{/creator/quizzes/{id}(id=${quiz.id})}">&larr; Back to quiz</a>
+    <h1 class="h3 my-3">Results: <span th:text="${quiz.title}">Quiz</span></h1>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-2"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.attempts}">0</div><div class="text-muted">Attempts</div></div></div>
+        <div class="col-6 col-lg-2"><div class="card stat-card p-3"><div class="stat-value" th:text="${#numbers.formatDecimal(stats.average, 1, 1)} + '%'">0%</div><div class="text-muted">Average</div></div></div>
+        <div class="col-6 col-lg-2"><div class="card stat-card p-3"><div class="stat-value" th:text="${#numbers.formatDecimal(stats.highest, 1, 1)} + '%'">0%</div><div class="text-muted">Highest</div></div></div>
+        <div class="col-6 col-lg-2"><div class="card stat-card p-3"><div class="stat-value" th:text="${#numbers.formatDecimal(stats.lowest, 1, 1)} + '%'">0%</div><div class="text-muted">Lowest</div></div></div>
+        <div class="col-6 col-lg-2"><div class="card stat-card p-3"><div class="stat-value" th:text="${#numbers.formatDecimal(stats.passRate, 1, 1)} + '%'">0%</div><div class="text-muted">Pass rate</div></div></div>
+        <div class="col-6 col-lg-2"><div class="card stat-card p-3"><div class="stat-value" th:text="${#numbers.formatDecimal(stats.averageRating, 1, 1)}">0</div><div class="text-muted">Avg rating (<span th:text="${stats.feedbackCount}">0</span>)</div></div></div>
+    </div>
+
+    <div class="card p-3 mb-4">
+        <h2 class="h5">Participant attempts</h2>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead><tr><th>Participant</th><th>Score</th><th>Percentage</th><th>Result</th><th>Time taken</th><th>Submitted</th></tr></thead>
+                <tbody>
+                <tr th:each="a : ${attempts}">
+                    <td th:text="${a.participant.fullName}">Name</td>
+                    <td th:text="${a.score} + ' / ' + ${a.totalMarks}">0 / 0</td>
+                    <td th:text="${#numbers.formatDecimal(a.percentage, 1, 1)} + '%'">0%</td>
+                    <td><span class="badge" th:classappend="${a.passed} ? 'bg-success' : 'bg-danger'" th:text="${a.passed} ? 'Passed' : 'Failed'">Passed</span></td>
+                    <td th:text="${a.timeTakenSeconds / 60} + 'm ' + ${a.timeTakenSeconds % 60} + 's'">5m 0s</td>
+                    <td th:text="${#temporals.format(a.submittedAt, 'dd MMM yyyy HH:mm')}">date</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(attempts)}"><td colspan="6" class="text-muted">Nobody has finished this quiz yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card p-3">
+        <h2 class="h5">Feedback from participants</h2>
+        <div class="border-bottom py-2" th:each="f : ${feedbackList}">
+            <strong th:text="${f.participant.fullName}">Name</strong>
+            <span class="badge bg-warning text-dark" th:text="${f.rating} + '/5'">5/5</span>
+            <div th:text="${f.comment}">Comment</div>
+        </div>
+        <p class="text-muted mb-0" th:if="${#lists.isEmpty(feedbackList)}">No feedback yet.</p>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

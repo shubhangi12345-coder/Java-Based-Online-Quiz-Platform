@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quiz result')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="card p-4 mb-4">
+        <div class="d-flex flex-wrap align-items-center gap-4">
+            <div class="score-ring" th:classappend="${attempt.passed} ? 'pass' : 'fail'" th:style="'--pct:' + ${attempt.percentage}">
+                <div><strong class="fs-3" th:text="${#numbers.formatDecimal(attempt.percentage, 1, 1)} + '%'">0%</strong>
+                    <span class="small text-muted" th:text="${attempt.score} + ' / ' + ${attempt.totalMarks}">0 / 0</span></div>
+            </div>
+            <div class="flex-grow-1">
+                <h1 class="h3" th:text="${attempt.quiz.title}">Quiz</h1>
+                <p class="mb-2">
+                    <span class="badge fs-6" th:classappend="${attempt.passed} ? 'bg-success' : 'bg-danger'" th:text="${attempt.passed} ? 'Passed' : 'Failed'">Passed</span>
+                    <span class="badge fs-6 bg-secondary" th:text="'Grade ' + ${grade}">Grade A</span>
+                    <span class="badge fs-6 bg-info text-dark" th:if="${attempt.status.name() == 'AUTO_SUBMITTED'}">Auto-submitted</span>
+                </p>
+                <p class="text-muted mb-1">Passing mark: <span th:text="${attempt.quiz.passingPercent}">40</span>% &middot;
+                    time taken: <span th:text="${attempt.timeTakenSeconds / 60} + 'm ' + ${attempt.timeTakenSeconds % 60} + 's'">5m</span></p>
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <form th:action="@{/participant/quizzes/{id}/start(id=${attempt.quiz.id})}" method="post"
+                          onsubmit="return confirm('Start this quiz again? The timer begins immediately.')">
+                        <button type="submit" class="btn btn-brand">Retake quiz</button>
+                    </form>
+                    <a class="btn btn-outline-secondary" th:href="@{/participant/quizzes}">More quizzes</a>
+                    <a class="btn btn-outline-secondary" th:href="@{/participant/attempts}">My attempts</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-4 mb-4">
+        <h2 class="h5">Question review</h2>
+        <div class="border rounded p-3 mb-3 bg-white" th:each="a, st : ${attempt.answers}">
+            <div class="d-flex justify-content-between gap-2">
+                <div class="fw-semibold" th:text="${st.count} + '. ' + ${a.question.text}">Question</div>
+                <span class="badge" th:classappend="${a.selectedOption == null} ? 'bg-secondary' : (${a.correct} ? 'bg-success' : 'bg-danger')"
+                      th:text="${a.selectedOption == null} ? 'Unanswered' : (${a.correct} ? 'Correct' : 'Incorrect')">Correct</span>
+            </div>
+            <div class="mt-2">
+                <div class="opt" th:each="o : ${a.question.options}"
+                     th:classappend="${o.correct} ? 'correct' : (${a.selectedOption != null and a.selectedOption.id == o.id} ? 'wrong' : '')">
+                    <span th:text="${o.text}">Option</span>
+                    <span class="float-end small" th:if="${o.correct}">Correct answer</span>
+                    <span class="float-end small" th:if="${a.selectedOption != null and a.selectedOption.id == o.id}">&nbsp;Your answer</span>
+                </div>
+            </div>
+            <p class="small text-muted mt-2 mb-0" th:if="${a.question.explanation != null}" th:text="'Explanation: ' + ${a.question.explanation}">Explanation</p>
+        </div>
+    </div>
+
+    <div class="card p-4">
+        <h2 class="h5" th:text="${hasFeedback} ? 'Your feedback (you can update it)' : 'Rate this quiz'">Rate this quiz</h2>
+        <form th:action="@{/participant/quizzes/{id}/feedback(id=${attempt.quiz.id})}" th:object="${feedbackForm}" method="post">
+            <input type="hidden" name="attemptId" th:value="${attempt.id}">
+            <fieldset class="mb-3">
+                <legend class="form-label fs-6">Rating</legend>
+                <div class="form-check form-check-inline" th:each="n : ${ {1,2,3,4,5} }">
+                    <input class="form-check-input" type="radio" th:field="*{rating}" th:value="${n}">
+                    <label class="form-check-label" th:for="${#ids.prev('rating')}" th:text="${n}">5</label>
+                </div>
+            </fieldset>
+            <div class="mb-3">
+                <label for="comment" class="form-label">Comment (optional)</label>
+                <textarea class="form-control" rows="2" maxlength="1000" th:field="*{comment}"></textarea>
+            </div>
+            <button type="submit" class="btn btn-brand">Send feedback</button>
+        </form>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

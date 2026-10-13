@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <h1 class="h3 mb-3">Admin dashboard</h1>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.totalUsers}">0</div><div class="text-muted">Users</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.creators}">0</div><div class="text-muted">Quiz creators</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.participants}">0</div><div class="text-muted">Participants</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.admins}">0</div><div class="text-muted">Admins</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.totalQuizzes}">0</div><div class="text-muted">Quizzes</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.pendingQuizzes}">0</div><div class="text-muted">Pending approval</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.approvedQuizzes}">0</div><div class="text-muted">Approved quizzes</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.rejectedQuizzes}">0</div><div class="text-muted">Rejected quizzes</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${stats.totalAttempts}">0</div><div class="text-muted">Finished attempts</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card stat-card p-3"><div class="stat-value" th:text="${#numbers.formatDecimal(stats.averageScore, 1, 1)} + '%'">0%</div><div class="text-muted">Average score</div></div></div>
+    </div>
+
+    <div class="card p-3">
+        <h2 class="h5">Quizzes waiting for approval</h2>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead><tr><th>Title</th><th>Creator</th><th>Questions</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="q : ${pendingQuizzes}">
+                    <td th:text="${q.title}">Title</td>
+                    <td th:text="${q.creator.fullName}">Creator</td>
+                    <td th:text="${#lists.size(q.questions)}">0</td>
+                    <td><a class="btn btn-sm btn-brand" th:href="@{/admin/quizzes/{id}(id=${q.id})}">Review</a></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(pendingQuizzes)}"><td colspan="4" class="text-muted">Nothing to review right now.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
